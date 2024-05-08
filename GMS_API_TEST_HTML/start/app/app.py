@@ -7,7 +7,7 @@ app = Flask(__name__, template_folder='./GMS_API_TEST_HTML/start/templates')
 
 @app.route('/')
 def index():
-    return render_template('index1.html')
+    return render_template('index.html')
 
 @app.route('/result', methods=['POST'])
 def result():
