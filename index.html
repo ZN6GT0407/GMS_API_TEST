@@ -62,7 +62,7 @@
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 <li><a class="dropdown-item" href="#" data-api="GMS_API1">Device Status</a></li>
                 <li><a class="dropdown-item" href="#" data-api="GMS_API2">Server Playback</a></li>
-                <li><a class="dropdown-item" href="#" data-api="GMS_API3">API 3</a></li>
+                <li><a class="dropdown-item" href="#" data-api="GMS_API3">Remote Playback</a></li>
             </ul>
         </div>
         <div class="dropdown text-center mb-3">
@@ -136,6 +136,41 @@
                 <button type="button" class="btn btn-primary" id="GMS_API2_button">Submit</button>
             </div>  
         </div>
+        <div class="mb-3" id="GMS_API3_Fields" style="display:none;">
+            <label for="GMS_API3_ip" class="form-label">IP Address:</label>
+            <input type="text" class="form-control" id="GMS_API3_ip" name="ip" required><br>
+
+            <label for="GMS_API3_username" class="form-label">Username:</label>
+            <input type="text" class="form-control" id="GMS_API3_username" name="username" required><br>
+
+            <label for="GMS_API3_password" class="form-label">Password:</label>
+            <input type="password" class="form-control" id="GMS_API3_password" name="password" required><br>
+
+            <label for="GMS_API3_deviceid" class="form-label">Device ID:</label>
+            <input type="text" class="form-control" id="GMS_API3_deviceid" name="deviceid" required><br>
+
+            <label for="GMS_API3_ch" class="form-label">Channel:</label>
+            <select class="form-select" id="GMS_API3_ch" name="ch" required>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+            </select><br>
+
+            <label for="GMS_API3_spbtime" class="form-label">Start Time:</label>
+            <input type="text" class="form-control" id="GMS_API3_spbtime" name="spbtime" required><br>
+
+            <label for="GMS_API3_duration" class="form-label">Duration (1~3600):</label>
+            <input type="text" class="form-control" id="GMS_API3_duration" name="duration" required><br>
+
+            <div class="text-center">
+                <button type="button" class="btn btn-primary" id="GMS_API3_button">Submit</button>
+            </div>  
+        </div>
     </form>
 
     <div class="terminal mb-5" id="apiResult" style="display: none;">
@@ -158,7 +193,7 @@
                 var username = document.getElementById('GMS_API1_username').value;
                 var password = document.getElementById('GMS_API1_password').value;
                 var deviceid = document.getElementById('GMS_API1_deviceid').value;
-
+    
                 // 將密碼轉換為 SHA256 的大寫形式
                 var hashedPassword = sha256(password).toUpperCase();
                 if (ip.endsWith('/')) {
@@ -175,12 +210,12 @@
                     },
                     url: ip + "/gkdevice/device"
                 };
-
+    
                 var generatedRequest = document.getElementById('generatedRequest');
                 generatedRequest.textContent = JSON.stringify(requestData, null, 2);
                 document.getElementById('apiResult').style.display = 'block';
             });
-
+    
             var submitButton2 = document.getElementById('GMS_API2_button');
             submitButton2.addEventListener('click', function() {
                 var ip = document.getElementById('GMS_API2_ip').value;
@@ -191,7 +226,7 @@
                 var spbtime = document.getElementById('GMS_API2_spbtime').value;
                 var duration = document.getElementById('GMS_API2_duration').value;
                 var lobk_format = document.getElementById('GMS_API2_lobk_format').value;
-
+    
                 // 將密碼轉換為 SHA256 的大寫形式
                 var hashedPassword = sha256(password).toUpperCase();
                 if (ip.endsWith('/')) {
@@ -212,45 +247,116 @@
                 var day = parseInt(spbtime.substring(6, 8));
                 var hour = parseInt(spbtime.substring(8, 10));
                 var minute = parseInt(spbtime.substring(10, 12));
-
+    
                 // 转换日期和时间到UTC Unix时间戳
                 var datetime = new Date(year, month - 1, day, hour, minute);
                 var utcTimestamp = Math.floor(datetime.getTime() / 1000); // 使用Math.floor()取整
-
+    
                 console.log("UTC Unix timestamp (seconds):", utcTimestamp);
-
+    
                 console.log("Parsed spbtime:", spbtime);
                 
                 var requestData = {
                     ServerPlaybackAsk: ip + "/web.cgi?type=lobkask&user=" + username + "&password=" + hashedPassword + "&deviceid=" + deviceid + "&ch=" + ch + "&spbtime=" + utcTimestamp + "&duration=" + duration + "&format=" + lobk_format,
-
+    
                     ServerPlaybackGet: ip + "/web.cgi?type=lobkget&user=" + username + "&password=" + hashedPassword + "&deviceid=" + deviceid + "&ch=" + ch + "&spbtime=" + utcTimestamp + "&duration=" + duration + "&format=" + lobk_format
                 };
-
+    
                 var generatedRequest = document.getElementById('generatedRequest');
                 generatedRequest.style.textAlign = 'left';
                 generatedRequest.innerHTML = `
                     <pre style="padding-left: 20px; text-align: left;">
-{
-"ServerPlaybackAsk":
-"${requestData.ServerPlaybackAsk}"
-
-// This will response:
-// "already": false,  //true
-// "result": "CREATE OK" // "BACKUP FAIL" or "CREATE FAIL" or "HANDLING" or "DOWNLOAD OK"
-// when download is ok, then get file.
-
-"ServerPlaybackGet": 
-"${requestData.ServerPlaybackGet}"
-}
+    {
+    "ServerPlaybackAsk":
+    "${requestData.ServerPlaybackAsk}"
+    
+    // This will response:
+    // "already": false,  //true
+    // "result": "CREATE OK" // "BACKUP FAIL" or "CREATE FAIL" or "HANDLING" or "DOWNLOAD OK"
+    // when download is ok, then get file.
+    
+    "ServerPlaybackGet": 
+    "${requestData.ServerPlaybackGet}"
+    }
                     </pre>`;
                 document.getElementById('apiResult').style.display = 'block';
             });
+    
+            var submitButton3 = document.getElementById('GMS_API3_button');
+            submitButton3.addEventListener('click', function() {
+                var ip = document.getElementById('GMS_API3_ip').value;
+                var username = document.getElementById('GMS_API3_username').value;
+                var password = document.getElementById('GMS_API3_password').value;
+                var deviceid = document.getElementById('GMS_API3_deviceid').value;
+                var ch = document.getElementById('GMS_API3_ch').value;
+                var spbtime = document.getElementById('GMS_API3_spbtime').value;
+                var duration = document.getElementById('GMS_API3_duration').value;
+    
+                // 將密碼轉換為 SHA256 的大寫形式
+                var hashedPassword = sha256(password).toUpperCase();
+                if (ip.endsWith('/')) {
+                    ip = ip.slice(0, -1); // 切掉最後一個字符
+                }
+                spbtime = spbtime.replace(/\s/g, ''); // 移除空格
+                spbtime = spbtime.replace(/-/g, ''); // 移除 -
+                spbtime = spbtime.replace(':', ''); // 移除 :
+                // 尝试解析时间
+                var datetime = new Date(spbtime.slice(0, 4), // 年份
+                                        spbtime.slice(4, 6) - 1, // 月份 (注意月份是从0开始计数的)
+                                        spbtime.slice(6, 8), // 日
+                                        spbtime.slice(8, 10), // 小时
+                                        spbtime.slice(10, 12)); // 分钟
+                // 解析日期和时间
+                var year = parseInt(spbtime.substring(0, 4));
+                var month = parseInt(spbtime.substring(4, 6));
+                var day = parseInt(spbtime.substring(6, 8));
+                var hour = parseInt(spbtime.substring(8, 10));
+                var minute = parseInt(spbtime.substring(10, 12));
+    
+                // 转换日期和时间到UTC Unix时间戳
+                var datetime = new Date(year, month - 1, day, hour, minute);
+                var utcTimestamp = Math.floor(datetime.getTime() / 1000); // 使用Math.floor()取整
+    
+                console.log("UTC Unix timestamp (seconds):", utcTimestamp);
+    
+                console.log("Parsed spbtime:", spbtime);
+                
+                var requestData = {
+                    RemotePlaybackAsk: ip + "/web.cgi?type=repbmp4ask&user=" + username + "&password=" + hashedPassword + "&deviceid=" + deviceid + "&ch=" + ch + "&spbtime=" + utcTimestamp + "&duration=" + duration,
+    
+                    RemotePlaybackGet: ip + "/web.cgi?type=repbmp4get&user=" + username + "&password=" + hashedPassword + "&deviceid=" + deviceid + "&ch=" + ch + "&spbtime=" + utcTimestamp + "&duration=" + duration
+                };
+    
+                var generatedRequest = document.getElementById('generatedRequest');
+                generatedRequest.style.textAlign = 'left';
+                generatedRequest.innerHTML = `
+                    <pre style="padding-left: 20px; text-align: left;">
+    {
+    "RemotePlaybackAsk":
+    "${requestData.RemotePlaybackAsk}"
+    
+    // This will response:
+    // "already": false,  //true
+    // "result": "CREATE OK" // "BACKUP FAIL" or "CREATE FAIL" or "HANDLING" or "DOWNLOAD OK"
+    // when download is ok, then get file.
+    
+    "RemotePlaybackGet": 
+    "${requestData.RemotePlaybackGet}"
+    }
+                    </pre>`;
+                document.getElementById('apiResult').style.display = 'block';
+            });
+    
             // 初始化 Flatpickr
             flatpickr("#GMS_API2_spbtime", {
                 enableTime: true,
                 dateFormat: "Y-m-d H:i",
             });
+            flatpickr("#GMS_API3_spbtime", {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+            });
+    
             // 監聽下拉菜單的選擇事件，顯示相應的表單字段
             document.querySelectorAll('.dropdown-item').forEach(item => {
                 item.addEventListener('click', function() {
@@ -259,29 +365,38 @@
                     toggleForm(selectedAPI);
                 });
             });
-
+    
             // 函數：根據選擇的 API 顯示相應的表單字段
             function toggleForm(api) {
                 var api1Fields = document.getElementById('GMS_API1_Fields');
                 var api2Fields = document.getElementById('GMS_API2_Fields');
+                var api3Fields = document.getElementById('GMS_API3_Fields');
                 switch (api) {
                     case 'GMS_API1':
                         api1Fields.style.display = 'block';
                         api2Fields.style.display = 'none';
+                        api3Fields.style.display = 'none';
                         break;
                     case 'GMS_API2':
                         api1Fields.style.display = 'none';
                         api2Fields.style.display = 'block';
+                        api3Fields.style.display = 'none';
+                        break;
+                    case 'GMS_API3':
+                        api1Fields.style.display = 'none';
+                        api2Fields.style.display = 'none';
+                        api3Fields.style.display = 'block';
                         break;
                     default:
                         api1Fields.style.display = 'none';
                         api2Fields.style.display = 'none';
+                        api3Fields.style.display = 'none';
                         break;
                 }
             }
         });
-
     </script>
+    
     <!-- SHA256 function -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
 </body>
