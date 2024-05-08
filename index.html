@@ -200,6 +200,7 @@
                     ip = ip.slice(0, -1); // 切掉最後一個字符
                 }
                 var requestData = {
+                    Post: ip + "/gkdevice/device",
                     headers: {
                         "Content-Type": "application/json; charset=utf-8"
                     },
@@ -208,7 +209,6 @@
                         "password": hashedPassword,
                         "deviceid": deviceid
                     },
-                    url: ip + "/gkdevice/device"
                 };
     
                 var generatedRequest = document.getElementById('generatedRequest');
