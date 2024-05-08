@@ -3,7 +3,7 @@ import requests
 import json
 import hashlib
 
-app = Flask(__name__, template_folder='D:/VacronGMS/server/Python/GMS_API_TEST_HTML/start/templates')
+app = Flask(__name__, template_folder='./GMS_API_TEST_HTML/start/templates')
 
 @app.route('/')
 def index():
