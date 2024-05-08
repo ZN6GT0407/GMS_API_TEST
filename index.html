@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Request Form</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">Device Request Form</h2>
+        <form id="deviceForm">
+            <div class="form-group">
+                <label for="ip">IP Address:</label>
+                <input type="text" class="form-control" id="ip" placeholder="Enter IP Address">
+            </div>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" class="form-control" id="username" placeholder="Enter Username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" class="form-control" id="password" placeholder="Enter Password">
+            </div>
+            <div class="form-group">
+                <label for="deviceid">Device ID:</label>
+                <input type="text" class="form-control" id="deviceid" placeholder="Enter Device ID">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#deviceForm').submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                // Get form values
+                var ip = $('#ip').val();
+                var username = $('#username').val();
+                var password = $('#password').val();
+                var deviceid = $('#deviceid').val();
+
+                // Call your Python function here using AJAX
+                $.ajax({
+                    type: "POST",
+                    url: "https://gms.vacron.com/gkdevice/device",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({
+                        "username": username,
+                        "password": password,
+                        "deviceid": deviceid
+                    }),
+                    success: function (response) {
+                        // Handle successful response
+                        console.log(response);
+                        // Open new window to display response
+                        var responseWindow = window.open("", "_blank");
+                        responseWindow.document.write("<pre>" + JSON.stringify(response, null, 2) + "</pre>");
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle error
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
